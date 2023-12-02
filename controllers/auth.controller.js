@@ -55,10 +55,21 @@ const loginWithEmail = async (req, res) => {
     if (!isPasswordValid) {
       throw new Error("Invalid Password");
     }
-    res.status(200).json({ user: user._id });
+    console.log("login hoise");
+    res.status(200).redirect("/home");
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+};
+
+const getLogin = async (req, res) => {
+  res.render("../views/auth/login");
+};
+const getRegister = async (req, res) => {
+  res.render("../views/auth/register");
+};
+const getForgotPassword = async (req, res) => {
+  res.render("../views/auth/forgotPassword");
 };
 
 module.exports = {
@@ -66,4 +77,6 @@ module.exports = {
   isValidPassword: isValidPassword,
   registerWithEmail: registerWithEmail,
   loginWithEmail: loginWithEmail,
+  getLogin: getLogin,
+  getRegister: getRegister,
 };

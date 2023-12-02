@@ -7,9 +7,26 @@ const session = require("express-session");
 const passport = require("passport");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth.route");
-app.use(bodyParser.json());
+const homeRoutes = require("./routes/home.route");
+const passportSetup = require("./config/passport");
 
+app.use(cors()); // Add this if needed
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(
+  session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+app.set("view engine", "ejs");
+app.use(express.static("public"));
 app.use(authRoutes);
+app.use(homeRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI, {
