@@ -1,20 +1,43 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Login</title>
     <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
 </head>
-<body>
-    <h1>Login to PlanIt</h1>
-    <form action="/login" method="POST">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <input type="submit" value="Login">
-    </form>
-    <p>Don't have an account? <a href="/register">Register here</a></p>
-    <p>Forgot your password? <a href="/forgot-password">Reset password</a></p>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="text-center mb-4">Login to PlanIt</h1>
+                        <form action="/login" method="POST">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email:</label>
+                                <input type="email" id="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password:</label>
+                                <input type="password" id="password" name="password" class="form-control" required>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </div>
+                        </form>
+                        <hr class="my-4">
+                        <a href="/google" class="btn btn-danger btn-google d-flex align-items-center">
+                            <div> <img src="/google.png" href="/google" alt="Google Logo" style="width: 30px; height: 30px;">
+                                Login with Google</div>
+                           
+                        </a>
+                        <p class="mt-3">Don't have an account? <a href="/register">Register here</a></p>
+                        <p>Forgot your password? <a href="/forgot-password">Reset password</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

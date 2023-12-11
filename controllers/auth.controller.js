@@ -1,6 +1,14 @@
 const User = require("../models/User.model");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
+const SECRET = process.env.SECRET;
+
+const createToken = (id) => {
+  return jwt.sign({ id }, SECRET, {
+    expiresIn: 3 * 24 * 60 * 60,
+  });
+};
 
 const isValidEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,7 +40,7 @@ const registerWithEmail = async (req, res) => {
       email,
       password: hashedPassword,
     });
-    res.status(201).json({ user: user._id });
+    res.status(201).redirect("/login");
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -55,7 +63,18 @@ const loginWithEmail = async (req, res) => {
     if (!isPasswordValid) {
       throw new Error("Invalid Password");
     }
-    console.log("login hoise");
+    const token = createToken(user._id);
+    res.cookie("jwt", token, { httpOnly: true });
+    res.status(200).redirect("/home");
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+const loginWithGoogle = async (req, res) => {
+  try {
+    const token = createToken(req.user._id);
+    res.cookie("jwt", token, { httpOnly: true });
     res.status(200).redirect("/home");
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -63,13 +82,28 @@ const loginWithEmail = async (req, res) => {
 };
 
 const getLogin = async (req, res) => {
-  res.render("../views/auth/login");
+  const token = req.cookies.jwt;
+  if (token) {
+    res.redirect("/home");
+  } else {
+    res.render("../views/auth/login");
+  }
 };
 const getRegister = async (req, res) => {
-  res.render("../views/auth/register");
+  const token = req.cookies.jwt;
+  if (token) {
+    res.redirect("/home");
+  } else {
+    res.render("../views/auth/register");
+  }
 };
 const getForgotPassword = async (req, res) => {
   res.render("../views/auth/forgotPassword");
+};
+const getLogout = async (req, res) => {
+  res.cookie("jwt", "", { maxAge: 1 });
+  res.cookie("connect.sid", "", { maxAge: 1 });
+  res.redirect("/login");
 };
 
 module.exports = {
@@ -79,4 +113,6 @@ module.exports = {
   loginWithEmail: loginWithEmail,
   getLogin: getLogin,
   getRegister: getRegister,
+  getLogout: getLogout,
+  loginWithGoogle: loginWithGoogle,
 };

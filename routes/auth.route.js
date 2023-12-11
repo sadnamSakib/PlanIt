@@ -7,6 +7,8 @@ const {
   registerWithEmail,
   getRegister,
   getLogin,
+  getLogout,
+  loginWithGoogle,
   // getForgotPassword,
   // postForgotPassword,
 } = require("../controllers/auth.controller");
@@ -18,12 +20,7 @@ router.get("/login", getLogin);
 router.get("/google", passport.authenticate("google"));
 // router.get("/forgot-password", getForgotPassword);
 // router.post("/forgot-password", postForgotPassword);
-router.get(
-  "/login/google",
-  passport.authenticate("google", {
-    successRedirect: "/home",
-    failureRedirect: "/login",
-  })
-);
+router.get("/login/google", passport.authenticate("google"), loginWithGoogle);
+router.get("/logout", getLogout);
 
 module.exports = router;

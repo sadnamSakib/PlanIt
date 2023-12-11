@@ -9,6 +9,7 @@ const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth.route");
 const homeRoutes = require("./routes/home.route");
 const passportSetup = require("./config/passport");
+const { requireAuth, checkUser } = require("./middlewares/auth.middleware");
 
 app.use(cors()); // Add this if needed
 app.use(bodyParser.json());
@@ -21,11 +22,16 @@ app.use(
     saveUninitialized: false,
   })
 );
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
+app.use("/css", express.static("./node_modules/bootstrap/dist/css"));
+app.use("/js", express.static("./node_modules/bootstrap/dist/js"));
+app.use("/js", express.static("./node_modules/jquery/dist"));
 app.set("view engine", "ejs");
 app.use(express.static("public"));
+app.get("*", checkUser);
 app.use(authRoutes);
+app.use(requireAuth);
 app.use(homeRoutes);
 
 mongoose
