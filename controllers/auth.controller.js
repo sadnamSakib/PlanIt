@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const User = require("../models/User.model");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
@@ -65,7 +66,7 @@ const loginWithEmail = async (req, res) => {
     }
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true });
-    res.status(200).redirect("/home");
+    res.status(200).redirect("/projects");
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -75,7 +76,7 @@ const loginWithGoogle = async (req, res) => {
   try {
     const token = createToken(req.user._id);
     res.cookie("jwt", token, { httpOnly: true });
-    res.status(200).redirect("/home");
+    res.status(200).redirect("/projects");
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -106,6 +107,47 @@ const getLogout = async (req, res) => {
   res.redirect("/login");
 };
 
+const forgotPassword = async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new Error("User not found"));
+  }
+  const resetToken = user.createResetPasswordToken();
+  await user.save({ validateBeforeSave: false });
+  const resetURL = `${req.protocol}://${req.get(
+    "host"
+  )}/password-reset/${resetToken}`;
+  console.log(resetURL);
+};
+
+const passwordReset = async (req, res, next) => {
+  const token = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+  const user = await User.findOne({
+    passwordResetToken: token,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  if (!user) {
+    return next(new Error("Invalid Token"));
+  }
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(req.body.password, salt);
+  user.password = hashedPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  res.redirect("/login");
+};
+
+const getResetPassword = async (req, res) => {
+  res.render("../views/auth/forgotPassword");
+};
+const getPasswordReset = async (req, res) => {
+  res.render("../views/auth/resetPassword", { token: req.params.token });
+};
+
 module.exports = {
   isValidEmail: isValidEmail,
   isValidPassword: isValidPassword,
@@ -115,4 +157,8 @@ module.exports = {
   getRegister: getRegister,
   getLogout: getLogout,
   loginWithGoogle: loginWithGoogle,
+  forgotPassword: forgotPassword,
+  passwordReset: passwordReset,
+  getResetPassword: getResetPassword,
+  getPasswordReset: getPasswordReset,
 };

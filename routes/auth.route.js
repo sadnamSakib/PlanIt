@@ -9,8 +9,10 @@ const {
   getLogin,
   getLogout,
   loginWithGoogle,
-  // getForgotPassword,
-  // postForgotPassword,
+  forgotPassword,
+  passwordReset,
+  getResetPassword,
+  getPasswordReset,
 } = require("../controllers/auth.controller");
 
 router.post("/login", loginWithEmail);
@@ -18,9 +20,11 @@ router.post("/register", registerWithEmail);
 router.get("/register", getRegister);
 router.get("/login", getLogin);
 router.get("/google", passport.authenticate("google"));
-// router.get("/forgot-password", getForgotPassword);
-// router.post("/forgot-password", postForgotPassword);
 router.get("/login/google", passport.authenticate("google"), loginWithGoogle);
 router.get("/logout", getLogout);
+router.post("/forgot-password", forgotPassword);
+router.post("/password-reset/:token", passwordReset);
+router.get("/password-reset/:token", getPasswordReset);
+router.get("/forgot-password", getResetPassword);
 
 module.exports = router;
