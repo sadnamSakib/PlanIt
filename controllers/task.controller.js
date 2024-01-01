@@ -45,10 +45,6 @@ const createTask = async (req, res) => {
       });
       res.status(201).json(task);
     } else {
-      res.status(403).json({
-        success: false,
-        error: "You are not authorized to add task to this project",
-      });
       throw new Error("You are not authorized to add task to this project");
     }
   } catch (error) {

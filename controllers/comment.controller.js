@@ -27,7 +27,7 @@ const createComment = async (req, res) => {
     const user = getCurrentUser(req);
     const text = req.body.text;
     if (task.assignedTo.includes(user) || task.creator == user) {
-      const comment = Comment.create({
+      const comment = await Comment.create({
         text: text,
         creator: user,
         taskId: task._id,

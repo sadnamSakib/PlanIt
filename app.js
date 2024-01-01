@@ -12,9 +12,9 @@ const commentRoutes = require("./routes/comment.route");
 const profileRoutes = require("./routes/profile.route");
 const taskRoutes = require("./routes/task.route");
 const passportSetup = require("./config/passport");
-const { requireAuth, checkUser } = require("./middlewares/auth.middleware");
+const { requireAuth } = require("./middlewares/auth.middleware");
 
-app.use(cors()); // Add this if needed
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -30,7 +30,6 @@ app.use("/js", express.static("./node_modules/bootstrap/dist/js"));
 app.use("/js", express.static("./node_modules/jquery/dist"));
 app.set("view engine", "ejs");
 app.use(express.static("public"));
-app.get("*", checkUser);
 app.use(authRoutes);
 app.use(requireAuth);
 app.use(projectRoutes);

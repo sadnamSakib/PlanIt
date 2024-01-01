@@ -89,7 +89,7 @@ const loginWithGoogle = async (req, res) => {
 const getLogin = async (req, res) => {
   const token = req.cookies.jwt;
   if (token) {
-    res.redirect("/home");
+    res.redirect("/projects");
   } else {
     res.render("../views/auth/login");
   }
@@ -97,7 +97,7 @@ const getLogin = async (req, res) => {
 const getRegister = async (req, res) => {
   const token = req.cookies.jwt;
   if (token) {
-    res.redirect("/home");
+    res.redirect("/projects");
   } else {
     res.render("../views/auth/register");
   }
