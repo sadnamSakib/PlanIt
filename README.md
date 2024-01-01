@@ -18,9 +18,9 @@ Before running the project make sure you have installed [Node.js](https://nodejs
    npm start
    ```
   Alternatively you can also use nodemon for a better dev experience
-    ```
+   ```
     nodemon server.js
-    ```
+   ```
    
 4.Access the application
    Open your web browser and go to http://localhost:{port}.
