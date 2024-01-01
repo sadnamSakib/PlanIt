@@ -1,52 +1,111 @@
-<!-- FILEPATH: /d:/PlanIt-1/views/tasks/taskManager.ejs -->
-<!-- BEGIN: abpxx6d04wxr -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Head content here -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+  <script src="./js/bootstrap.bundle.min.js"></script>
+  <title>Your Projects</title>
 </head>
 <body>
 
-  <div class="container mt-4">
-    <h1 class="text-center">Project Manager</h1>
-
-    <div id="projectList" class="mt-4">
-      <!-- List items here -->
-    </div>
-
-    <div class="d-flex justify-content-end">
-      <button id="addProjectBtn" class="btn btn-primary btn-floating my-3 px-3" data-bs-toggle="modal" data-bs-target="#projectModal">
-        <h5 class="mb-0">Create</h5>
-      </button>
-    </div>
-  </div>
-
-  <!-- Bootstrap Modal -->
-  <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+  
+  <div class="modal fade" id="createProjectModal" tabindex="-1" aria-labelledby="createProjectModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="projectModalLabel">Create Project</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
         <div class="modal-body">
           <form>
             <div class="mb-3">
-              <label for="projectName" class="form-label">Project Name</label>
-              <input type="text" class="form-control" id="projectName">
+              <label for="project-title" class="col-form-label">Project title</label>
+              <input type="text" class="form-control" id="project-title">
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save</button>
+          <button type="button"  class="btn btn-primary" id="createProjectBtn" >Create</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="./js/bootstrap.bundle.min.js"></script>
-  <script src="script.js"></script>
+
+  <div class="container border p-3 my-5">
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="col-12 d-flex justify-content-end">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createProjectModal" >Create new project</button>
+        </div>
+        <h1>Your Projects</h1>
+      </div>
+    </div>
+    <div class="row mt-4 d-flex m-auto border p-2" id="projectContainer">
+      
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      fetch('/getProjectList')
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.success) { // Check if data exists and has the success property
+            const projectContainer = document.getElementById('projectContainer');
+            projectContainer.innerHTML = '';
+
+            data.projects.forEach(project => {
+              const projectElement = document.createElement('div');
+              projectElement.classList.add('col-4');
+              projectElement.innerHTML = `
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">${project.title}</h5>
+                    <p class="card-text">Created by: ${project.creator}</p>
+                  </div>
+                </div>
+              `;
+              projectContainer.appendChild(projectElement);
+            });
+          } else {
+            console.log("here");
+            console.error('Error fetching project list:', data && data.error); // Check if data exists before accessing error property
+          }
+        })
+        .catch(error => console.error('Error fetching project list:', error));
+    });
+  </script>
+  <script>
+
+      document.addEventListener('DOMContentLoaded', function () {
+    
+        document.getElementById('createProjectBtn').addEventListener('click', function () {
+          
+          const projectTitle = document.getElementById('project-title').value;
+  
+          
+          fetch('/createProject', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+          
+            },
+            body: JSON.stringify({
+              title: projectTitle,
+              
+            }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            
+            console.log('Project created:', data);
+            
+            $('#createProjectModal').modal('hide');
+          })
+          .catch(error => console.error('Error creating project:', error));
+        });
+      });
+
+
+  </script>
 </body>
 </html>
-

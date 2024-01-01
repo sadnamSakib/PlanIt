@@ -23,7 +23,7 @@ router.get("/google", passport.authenticate("google"));
 router.get("/login/google", passport.authenticate("google"), loginWithGoogle);
 router.get("/logout", getLogout);
 router.post("/forgot-password", forgotPassword);
-router.post("/password-reset/:token", passwordReset);
+router.patch("/password-reset/:token", passwordReset);
 router.get("/password-reset/:token", getPasswordReset);
 router.get("/forgot-password", getResetPassword);
 

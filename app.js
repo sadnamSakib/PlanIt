@@ -7,7 +7,10 @@ const session = require("express-session");
 const passport = require("passport");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth.route");
-const homeRoutes = require("./routes/home.route");
+const projectRoutes = require("./routes/project.route");
+const commentRoutes = require("./routes/comment.route");
+const profileRoutes = require("./routes/profile.route");
+const taskRoutes = require("./routes/task.route");
 const passportSetup = require("./config/passport");
 const { requireAuth, checkUser } = require("./middlewares/auth.middleware");
 
@@ -22,8 +25,6 @@ app.use(
     saveUninitialized: false,
   })
 );
-// app.use(passport.initialize());
-// app.use(passport.session());
 app.use("/css", express.static("./node_modules/bootstrap/dist/css"));
 app.use("/js", express.static("./node_modules/bootstrap/dist/js"));
 app.use("/js", express.static("./node_modules/jquery/dist"));
@@ -32,7 +33,10 @@ app.use(express.static("public"));
 app.get("*", checkUser);
 app.use(authRoutes);
 app.use(requireAuth);
-app.use(homeRoutes);
+app.use(projectRoutes);
+app.use(commentRoutes);
+app.use(profileRoutes);
+app.use(taskRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI, {})

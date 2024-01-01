@@ -57,8 +57,12 @@ const loginWithEmail = async (req, res) => {
       throw new Error("Invalid Password");
     }
     const user = await User.findOne({ email });
+
     if (!user) {
       throw new Error("User not found");
+    }
+    if (!user.password) {
+      throw new Error("Invalid Sign in attempt");
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
@@ -118,27 +122,35 @@ const forgotPassword = async (req, res, next) => {
     "host"
   )}/password-reset/${resetToken}`;
   console.log(resetURL);
+  res.send(resetURL);
 };
 
 const passwordReset = async (req, res, next) => {
-  const token = crypto
-    .createHash("sha256")
-    .update(req.params.token)
-    .digest("hex");
-  const user = await User.findOne({
-    passwordResetToken: token,
-    passwordResetExpires: { $gt: Date.now() },
-  });
-  if (!user) {
-    return next(new Error("Invalid Token"));
+  try {
+    const token = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+    const user = await User.findOne({
+      passwordResetToken: token,
+      passwordResetExpires: { $gt: Date.now() },
+    });
+    if (!user) {
+      return next(new Error("Invalid Token"));
+    }
+    if (!isValidPassword(req.body.password)) {
+      return next(new Error("Invalid Password"));
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    user.password = hashedPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+    res.redirect("/login");
+  } catch (err) {
+    return next(err);
   }
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(req.body.password, salt);
-  user.password = hashedPassword;
-  user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
-  await user.save();
-  res.redirect("/login");
 };
 
 const getResetPassword = async (req, res) => {

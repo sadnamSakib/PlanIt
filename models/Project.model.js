@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const Task = require("./Task.model.js");
 
 const projectSchema = new mongoose.Schema({
+  title: { type: String, required: true },
   creator: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    type: String,
     required: true,
   },
   admins: [
@@ -19,10 +19,14 @@ const projectSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
-  tasks: [Task.schema],
+  files: [
+    {
+      type: String,
+    },
+  ],
   // Add any other fields related to projects here
 });
 
 const Project = mongoose.model("Project", projectSchema);
 
-module.exports = { Project };
+module.exports = Project;
